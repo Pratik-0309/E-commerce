@@ -10,6 +10,7 @@ import Login from './pages/Login.jsx'
 import PlaceOrder from './pages/PlaceOrder.jsx'
 import Order from './pages/Order.jsx'
 import Navbar from './components/Navbar.jsx'
+import Footer from './components/Footer.jsx'
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
       <Route path='/place-order' element={<PlaceOrder/>} />
       <Route path='/orders' element={<Order/>} />
     </Routes>
-
+    <Footer />
     </div>
   )
 }
