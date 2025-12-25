@@ -137,24 +137,28 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const {refreshToken, accessToken} = await generateAccessAndRefreshToken(user._id);
+    const { refreshToken, accessToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
 
     const options = {
       httpOnly: true,
-      secure: true
-    }
+      secure: true,
+    };
 
-    console.log("User Logged In :",loggedInUser.email)
+    console.log("User Logged In :", loggedInUser.email);
 
     return res
-    .status(200)
-    .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",refreshToken,options)
-    .json({
-      user: loggedInUser,
-    });
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        user: loggedInUser,
+      });
   } catch (error) {
     console.log("error: ", error.message);
     return res.status(500).json({
@@ -163,6 +167,49 @@ const loginUser = async (req, res) => {
   }
 };
 
-const adminLogin = async (req, res) => {};
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+      });
+
+      const refreshToken = jwt.sign(
+        { email },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      if(!accessToken || !refreshToken){
+        return res.json({
+          message: "Token is Not generated"
+        })
+      }
+
+      const options = {
+        httpOnly: true,
+        secure: true,
+      };
+      return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json({ success: true, message: "Admin authenticated" });
+    } else {
+      return res.status(401).json({
+        message: "Invalid Credentials",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({
+      message: error.message,
+    });
+  }
+};
 
 export { loginUser, registerUser, adminLogin };
