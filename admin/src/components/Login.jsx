@@ -1,14 +1,27 @@
 import React, { useState } from "react";
-
-const Login = () => {
+import axios from "axios";
+import { backendURL } from "../App";
+import { toast } from "react-toastify";
+const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
+      const response = await axios.post(backendURL + "/api/user/admin-login", {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        setIsLoggedIn(true);
+        localStorage.setItem('isLoggedIn','true');
+      }else{
+        toast.error(response.data.message)
+      }
     } catch (error) {
       console.error(error);
+      toast.error(error.message)
     }
   };
 
