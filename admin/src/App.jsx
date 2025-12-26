@@ -8,21 +8,23 @@ import List from "./pages/List";
 import Orders from "./pages/orders";
 import Login from "./components/Login.jsx";
 import axios from "axios";
+import { ToastContainer } from 'react-toastify';
 
 export const backendURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;
 
-
 function App() {
-  const [token, setToken] = useState("");
+
+  const [isLoggedIn,setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {token === "" ? (
-        <Login />
+      <ToastContainer />
+      {!isLoggedIn ?(
+        <Login setIsLoggedIn={setIsLoggedIn} />
       ) : (
         <>
-          <Navbar />
+          <Navbar setIsLoggedIn={setIsLoggedIn} />
           <hr className="text-gray-300 mt-3" />
           <div className="flex w-full ">
             <Sidebar />
