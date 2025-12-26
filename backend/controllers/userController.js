@@ -1,6 +1,13 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
+const options = {
+  httpOnly: true,
+  secure: false, 
+  sameSite: "Lax",
+  path: "/",
+};
+
 const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -56,18 +63,14 @@ const refreshAccessToken = async (req, res) => {
       });
     }
 
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-
-    const { accessToken, newRefreshToken } =
-      await generateAccessAndRefreshToken(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json({
         message: "Access token refreshed successfully",
       });
@@ -145,11 +148,6 @@ const loginUser = async (req, res) => {
       "-password -refreshToken"
     );
 
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-
     console.log("User Logged In :", loggedInUser.email);
 
     return res
@@ -184,16 +182,12 @@ const adminLogin = async (req, res) => {
         { expiresIn: "7d" }
       );
 
-      if(!accessToken || !refreshToken){
-        return res.json({
-          message: "Token is Not generated"
-        })
+      if (!accessToken || !refreshToken) {
+        return res.status(500).json({
+          message: "Token is Not generated",
+        });
       }
 
-      const options = {
-        httpOnly: true,
-        secure: true,
-      };
       return res
         .status(200)
         .cookie("accessToken", accessToken, options)
