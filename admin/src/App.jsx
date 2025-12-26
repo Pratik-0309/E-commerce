@@ -7,6 +7,11 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/orders";
 import Login from "./components/Login.jsx";
+import axios from "axios";
+
+export const backendURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.withCredentials = true;
+
 
 function App() {
   const [token, setToken] = useState("");
