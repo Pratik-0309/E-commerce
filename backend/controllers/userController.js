@@ -206,4 +206,17 @@ const adminLogin = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin };
+const adminLogout = async (req,res) => {
+  try {
+    return res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json({success: true, message: "Admin logged out successfully."})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export { loginUser, registerUser, adminLogin, adminLogout };
