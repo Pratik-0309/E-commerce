@@ -30,9 +30,9 @@ function App() {
             <Sidebar />
             <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
               <Routes>
-                <Route path="/add" element={<Add />}></Route>
-                <Route path="/list" element={<List />}></Route>
-                <Route path="/orders" element={<Orders />}></Route>
+                <Route path="/add" element={<Add isLoggedIn={isLoggedIn}/>}></Route>
+                <Route path="/list" element={<List isLoggedIn={isLoggedIn}/>}></Route>
+                <Route path="/orders" element={<Orders isLoggedIn={isLoggedIn}/>}></Route>
                 <Route></Route>
               </Routes>
             </div>
