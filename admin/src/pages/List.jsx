@@ -1,0 +1,33 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { backendURL, currency } from "../App";
+import { toast } from "react-toastify";
+
+function List() {
+  const [list, setList] = useState([]);
+  const fetchList = async () => {
+    try {
+      const response = await axios.get(backendURL + "/api/product/list");
+      if (response.status == 200) {
+        setList(response.data.products);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchList();
+  }, []);
+
+  return (
+    <>
+    
+    </>
+  );
+}
+
+export default List;
