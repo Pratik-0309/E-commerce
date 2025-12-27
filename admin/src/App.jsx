@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 
 export const backendURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;
+export const currency = '$'
 
 function App() {
 
