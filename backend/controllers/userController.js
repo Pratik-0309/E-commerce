@@ -112,13 +112,14 @@ const registerUser = async (req, res) => {
 
     console.log("User Register Successfully : ", user.name);
 
-    return res.status(200)
-    .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",refreshToken,options)
-    .json({
-      user,
-      message: "User Register Successfully",
-    });
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        user,
+        message: "User Register Successfully",
+      });
   } catch (error) {
     console.log("error:", error.message);
     return res.status(404).json({ message: error.message });
@@ -172,6 +173,22 @@ const loginUser = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({
+        success: true,
+        message: "Logged out successfully",
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -211,7 +228,7 @@ const adminLogin = async (req, res) => {
       message: error.message,
     });
   }
-}; 
+};
 
 const adminLogout = async (req, res) => {
   try {
@@ -226,4 +243,4 @@ const adminLogout = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, adminLogout };
+export { loginUser, registerUser, adminLogin, adminLogout, logoutUser, refreshAccessToken };
