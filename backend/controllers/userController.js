@@ -211,7 +211,7 @@ const adminLogin = async (req, res) => {
       message: error.message,
     });
   }
-};
+}; 
 
 const adminLogout = async (req, res) => {
   try {
