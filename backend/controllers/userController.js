@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const options = {
   httpOnly: true,
-  secure: false, 
+  secure: false,
   sameSite: "Lax",
   path: "/",
 };
@@ -106,9 +106,16 @@ const registerUser = async (req, res) => {
       password,
     });
 
+    const { refreshToken, accessToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
     console.log("User Register Successfully : ", user.name);
 
-    return res.status(200).json({
+    return res.status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
+    .json({
       user,
       message: "User Register Successfully",
     });
@@ -206,17 +213,17 @@ const adminLogin = async (req, res) => {
   }
 };
 
-const adminLogout = async (req,res) => {
+const adminLogout = async (req, res) => {
   try {
     return res
-    .status(200)
-    .clearCookie("accessToken",options)
-    .clearCookie("refreshToken",options)
-    .json({success: true, message: "Admin logged out successfully."})
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({ success: true, message: "Admin logged out successfully." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: error.message });
   }
-}
+};
 
 export { loginUser, registerUser, adminLogin, adminLogout };
