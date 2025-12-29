@@ -13,6 +13,7 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItem, setCartItem] = useState({});
   const [products, setProducts] = useState([]);
+  const [isLoggedIn,setIsLoggedIn] =  useState(localStorage.getItem('isLoggedIn') === 'true');
   const navigate = useNavigate();
 
   const addtoCart = async (itemId, size) => {
@@ -102,6 +103,8 @@ const ShopContextProvider = (props) => {
     getCartAmount,
     navigate,
     backendURL,
+    isLoggedIn,
+    setIsLoggedIn 
   };
 
   return (
