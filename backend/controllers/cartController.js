@@ -45,11 +45,11 @@ const updateCart = async (req, res) => {
     const { itemId, size, quantity } = req.body;
 
     const userData = await User.findById(userId);
-    let cartData = await User.cartData;
+    let cartData = await userData.cartData;
 
     cartData[itemId][size] = quantity;
 
-    await User.findByIdAndUpdate(userId, { cartData: cartData });
+    await User.findByIdAndUpdate(userId, { cartData: cartData },{ new: true });
 
     return res
       .status(200)
