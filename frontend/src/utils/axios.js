@@ -27,7 +27,11 @@ axiosInstance.interceptors.response.use(
     if (status === 401 && !originalRequest._retry && !isRefreshCall) {
       originalRequest._retry = true;
       try {
-        await axiosInstance.post("/api/user/refresh-token");
+        await axios.post(
+          "http://localhost:8080/api/user/refresh-token",
+          {},
+          { withCredentials: true }
+        );
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("isLoggedIn");
