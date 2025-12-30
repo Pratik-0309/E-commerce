@@ -39,7 +39,7 @@ const refreshAccessToken = async (req, res) => {
       req.cookies.refreshToken || req.body.refreshToken;
 
     if (!incomingRefreshToken) {
-      return res.status(404).json({
+      return res.status(401).json({
         message: "Refresh Token is Missing or unauthorized.",
       });
     }
@@ -76,30 +76,22 @@ const refreshAccessToken = async (req, res) => {
         .json({ message: "Invalid user ID found in refresh token." });
     }
 
-    if (incomingRefreshToken !== user?.refreshToken) {
-      return res.status(401).json({
-        message: "Refresh Token is Expired or Used (Logout required).",
-      });
-    }
-
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      user._id
+    const accessToken = jwt.sign(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m" }
     );
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json({
-        message: "Access token refreshed successfully",
-      });
+      .json({ success: true, message: "Token refreshed" });
   } catch (error) {
-    console.error("Token refresh failed:", error);
     return res
       .status(401)
       .clearCookie("accessToken")
       .clearCookie("refreshToken")
-      .json({ message: "Could not refresh token. Please log in again." });
+      .json({ message: "Expired session" });
   }
 };
 
