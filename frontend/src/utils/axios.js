@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/',
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    }
+  baseURL: "http://localhost:8080",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
 axiosInstance.interceptors.response.use(
@@ -30,6 +30,8 @@ axiosInstance.interceptors.response.use(
         await axiosInstance.post("/api/user/refresh-token");
         return axiosInstance(originalRequest);
       } catch (refreshError) {
+        localStorage.removeItem("isLoggedIn");
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
