@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axios";
 import axios from "axios";
 
 export const ShopContext = createContext();
@@ -13,7 +14,9 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItem, setCartItem] = useState({});
   const [products, setProducts] = useState([]);
-  const [isLoggedIn,setIsLoggedIn] =  useState(localStorage.getItem('isLoggedIn') === 'true');
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
   const navigate = useNavigate();
 
   const addtoCart = async (itemId, size) => {
@@ -33,6 +36,14 @@ const ShopContextProvider = (props) => {
       cartData[itemId][size] = 1;
     }
     setCartItem(cartData);
+    if (isLoggedIn) {
+      try {
+        await axiosInstance.post("/api/cart/add", { itemId, size });
+      } catch (error) {
+        console.log("Error while adding to cart:", error);
+        toast.error("Failed to add product in cart");
+      }
+    }
   };
 
   const getCartCount = () => {
@@ -53,6 +64,15 @@ const ShopContextProvider = (props) => {
     let cartData = structuredClone(cartItem);
     cartData[itemId][size] = quantity;
     setCartItem(cartData);
+
+    if (isLoggedIn) {
+      try {
+        await axiosInstance.put("/api/cart/update", { itemId, size, quantity });
+      } catch (error) {
+        console.log("Error while updating cart:", error);
+        toast.error("Failed to update product in cart");
+      }
+    }
   };
 
   const getCartAmount = () => {
@@ -84,9 +104,28 @@ const ShopContextProvider = (props) => {
     }
   };
 
+  const getUserCart = async (isLoggedIn) => {
+    try {
+      const response = await axiosInstance.get("/api/cart/get");
+      if (response.data.success) {
+        setCartItem(response.data.cartData);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     getProductData();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      getUserCart(isLoggedIn);
+    } else {
+      setCartItem({});
+    }
+  }, [isLoggedIn]);
 
   const value = {
     products,
@@ -104,7 +143,7 @@ const ShopContextProvider = (props) => {
     navigate,
     backendURL,
     isLoggedIn,
-    setIsLoggedIn 
+    setIsLoggedIn,
   };
 
   return (
