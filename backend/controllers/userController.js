@@ -49,6 +49,25 @@ const refreshAccessToken = async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
+    if (decodedToken.email === process.env.ADMIN_EMAIL) {
+      const accessToken = jwt.sign(
+        { email: decodedToken.email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "15m" }
+      );
+      const refreshToken = jwt.sign(
+        { email: decodedToken.email },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json({ message: "Admin token refreshed" });
+    }
+
     const user = await User.findById(decodedToken._id);
 
     if (!user) {
@@ -243,4 +262,11 @@ const adminLogout = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, adminLogout, logoutUser, refreshAccessToken };
+export {
+  loginUser,
+  registerUser,
+  adminLogin,
+  adminLogout,
+  logoutUser,
+  refreshAccessToken,
+};
