@@ -23,11 +23,11 @@ const orderSchema = new mongoose.Schema({
         required: true,
         default: 'Orders placed'
     },
-    payment: {
+    paymentMethod: {
         type: String,
         required: true
     },
-    paymentMethod: {
+    payment: {
         type: Boolean,
         required: true,
         default: false
