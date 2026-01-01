@@ -5,6 +5,7 @@ import axios from "axios";
 import { backendURL, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
+import axiosAdmin from "../utils/axiosAdmin";
 
 const Orders = ({ isLoggedIn }) => {
   const [orders, setOrders] = useState([]);
@@ -13,9 +14,7 @@ const Orders = ({ isLoggedIn }) => {
       return null;
     }
     try {
-      const response = await axios.get(backendURL + "/api/order/orders", {
-        withCredentials: true,
-      });
+      const response = await axiosAdmin.get(backendURL + "/api/order/orders");
       if (response.data.success) {
         setOrders(response.data.orders);
       } else {
