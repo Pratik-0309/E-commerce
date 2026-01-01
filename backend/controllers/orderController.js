@@ -40,10 +40,45 @@ const placeOrderStripe = async (req, res) => {};
 const placeOrderRazorpay = async (req, res) => {};
 
 // All orders data for admin
-const allOrders = async (req, res) => {};
+const allOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    if (!orders) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // User order details
-const userOrders = async (req, res) => {};
+const userOrders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Kindly login to view your orders",
+      });
+    }
+    const orders = await Order.find({ userId });
+    return res.json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // update order Status
 const updateOrderStatus = async (req, res) => {};
