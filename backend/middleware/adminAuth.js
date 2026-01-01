@@ -4,7 +4,7 @@ const adminAuth = async (req, res, next) => {
   try {
     const token =
       req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer", "");
+      req.header("Authorization")?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -22,7 +22,15 @@ const adminAuth = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Admin Auth Error:", error.message);
+    if(error.name === "TokenExpiredError"){
+      return res.status(401).json({
+        success: false,
+        message: "Token Expired",
+        code: "TOKEN_EXPIRED"
+      })
+    }
     return res.status(401).json({
+      success: false,
       message: "Invalid or expired token. Please login again.",
     });
   }
