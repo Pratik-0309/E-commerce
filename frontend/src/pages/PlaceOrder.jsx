@@ -14,7 +14,7 @@ function PlaceOrder() {
     isLoggedIn,
     cartItem,
     setCartItem,
-    getCartCount,
+    getCartAmount,
     delivery_fee,
     products,
   } = useContext(ShopContext);
@@ -58,7 +58,7 @@ function PlaceOrder() {
       let orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartCount() + delivery_fee,
+        amount: getCartAmount() + delivery_fee,
       }
       switch (method) {
         case "cod":
