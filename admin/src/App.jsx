@@ -5,7 +5,7 @@ import Sidebar from "./components/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
-import Orders from "./pages/orders";
+import Orders from "./pages/Orders.jsx";
 import Login from "./components/Login.jsx";
 import axios from "axios";
 import { ToastContainer } from 'react-toastify';
