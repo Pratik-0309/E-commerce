@@ -23,9 +23,6 @@ const generateAccessAndRefreshToken = async (userId) => {
       throw new Error("Token generation failed");
     }
 
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-
     return { accessToken, refreshToken };
   } catch (error) {
     console.log("Token Generation Error:", error.message);
