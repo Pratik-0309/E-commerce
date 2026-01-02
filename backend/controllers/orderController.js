@@ -1,5 +1,13 @@
 import Order from "../models/order.js";
 import User from "../models/user.js";
+import Stripe from "stripe";
+import "dotenv/config";
+
+const currency = "inr";
+const deliveryCharges = 10;
+
+// Gateway initialize
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // COD
 const placeOrder = async (req, res) => {
@@ -34,7 +42,62 @@ const placeOrder = async (req, res) => {
 };
 
 // Stripe
-const placeOrderStripe = async (req, res) => {};
+const placeOrderStripe = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { items, amount, address } = req.body;
+    const { origin } = req.headers;
+
+    const orderData = {
+      userId,
+      items,
+      address,
+      amount,
+      paymentMethod: "Stripe",
+      payment: false,
+      date: Date.now(),
+    };
+
+    const newOrder = new Order(orderData);
+    await newOrder.save();
+
+    const line_items = items.map((item) => ({
+      price_data: {
+        currency: currency,
+        product_data: {
+          name: item.name,
+        },
+        unit_amount: item.price * 100,
+      },
+      quantity: item.quantity,
+    }));
+
+    line_items.push({
+      price_data: {
+        currency: currency,
+        product_data: {
+          name: "Delivery Charges",
+        },
+        unit_amount: deliveryCharges * 100,
+      },
+      quantity: 1,
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
+      cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
+      line_items,
+      mode: "payment",
+    });
+
+    res.json({ success: true, url: session.url });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
 
 // Razorpay
 const placeOrderRazorpay = async (req, res) => {};
@@ -84,7 +147,7 @@ const userOrders = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    await Order.findByIdAndUpdate(orderId,{ status });
+    await Order.findByIdAndUpdate(orderId, { status });
     return res.status(200).json({
       success: true,
       message: "Order status updated successfully",
@@ -102,4 +165,5 @@ export {
   allOrders,
   userOrders,
   updateOrderStatus,
+  verfiStripePayment,
 };
