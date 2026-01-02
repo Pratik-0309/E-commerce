@@ -122,9 +122,6 @@ const verfiStripePayment = async (req, res) => {
   }
 };
 
-// Razorpay
-const placeOrderRazorpay = async (req, res) => {};
-
 // All orders data for admin
 const allOrders = async (req, res) => {
   try {
@@ -184,7 +181,6 @@ const updateOrderStatus = async (req, res) => {
 export {
   placeOrder,
   placeOrderStripe,
-  placeOrderRazorpay,
   allOrders,
   userOrders,
   updateOrderStatus,
