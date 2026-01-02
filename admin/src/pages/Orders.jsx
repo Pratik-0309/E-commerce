@@ -26,6 +26,19 @@ const Orders = ({ isLoggedIn }) => {
     }
   };
 
+  const statusHandler = async (event,orderId) => {
+    try {
+      const response = await axiosAdmin.post(backendURL + "/api/order/status",{orderId,status:event.target.value});
+      if(response.data.success){
+        toast.success("Order status updated successfully.");
+        await fetchOrders();
+      } 
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }
+
   useEffect(() => {
     fetchOrders();
   }, [isLoggedIn]);
@@ -87,6 +100,7 @@ const Orders = ({ isLoggedIn }) => {
               {order.amount}
             </p>
             <select
+              onChange={(e) => statusHandler(e,order._id)}
               value={order.status}
               className="p-2 border border-gray-300 rounded font-semibold bg-gray-50 cursor-pointer outline-none"
             >
