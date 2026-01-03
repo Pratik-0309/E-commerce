@@ -197,6 +197,24 @@ const logoutUser = async (req, res) => {
   }
 };
 
+const userProfile = async(req,res) => {
+  const userId = req.user._id;
+  try {
+    const user = await User.findById(userId).select("-password");
+    return res.status(200).json({
+      user,
+      message: "User profile fetched successfully",
+      success: true,
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+    })
+  }
+}
+
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -257,5 +275,6 @@ export {
   adminLogin,
   adminLogout,
   logoutUser,
+  userProfile,
   refreshAccessToken,
 };
