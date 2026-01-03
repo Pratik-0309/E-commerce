@@ -197,7 +197,7 @@ const logoutUser = async (req, res) => {
   }
 };
 
-const userProfile = async(req,res) => {
+const userProfile = async (req, res) => {
   const userId = req.user._id;
   try {
     const user = await User.findById(userId).select("-password");
@@ -205,15 +205,58 @@ const userProfile = async(req,res) => {
       user,
       message: "User profile fetched successfully",
       success: true,
-    })
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       message: error.message,
       success: false,
-    })
+    });
   }
-}
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { name, email } = req.body;
+
+    const updateData = {};
+    if (name && name.trim() !== "") updateData.name = name.trim();
+    if (email && email.trim() !== "") updateData.email = email.trim();
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid changes provided",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+      message: "Profile updated successfully",
+    });
+  } catch (error) {
+    console.error("Update Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 const adminLogin = async (req, res) => {
   try {
@@ -275,6 +318,7 @@ export {
   adminLogin,
   adminLogout,
   logoutUser,
+  updateProfile,
   userProfile,
   refreshAccessToken,
 };
